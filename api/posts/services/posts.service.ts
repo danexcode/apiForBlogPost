@@ -3,10 +3,10 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { In, Repository } from 'typeorm';
+import { FindManyOptions, FindOptionsWhere, In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { CreatePostDto, UpdatePostDto } from '../dtos/post.dto';
+import { CreatePostDto, FilterPostDto, UpdatePostDto } from '../dtos/post.dto';
 import { Tag } from '../entities/tag.entity';
 import { Post } from '../entities/post.entity';
 import { Category } from '../entities/category.entity';
@@ -22,8 +22,22 @@ export class PostsService {
     private tagRepo: Repository<Tag>,
   ) {}
 
-  findAll() {
-    return this.postRepo.find();
+  findAll(query?: FilterPostDto) {
+    const options: FindManyOptions = {
+      relations: ['comments', 'tags'],
+      order: { createdAt: 'ASC' },
+    };
+    if (query) {
+      const where: FindOptionsWhere<Post> = {};
+      const { limit, offset, tag } = query;
+      if (tag) {
+        where.tags = In([tag]);
+      }
+      options['take'] = limit;
+      options['skip'] = offset;
+      options['where'] = where;
+    }
+    return this.postRepo.find(options);
   }
 
   async findOne(id: number) {
@@ -115,7 +129,7 @@ export class PostsService {
     return this.postRepo.save(post);
   }
 
-  async delete(id: number) {
+  async remove(id: number) {
     const post = await this.findOne(id);
     if (!post) {
       throw new NotFoundException('post not found');
