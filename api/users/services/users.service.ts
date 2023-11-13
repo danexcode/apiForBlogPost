@@ -1,10 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../entities/user.entity';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcryptjs';
+
+import { User } from '../entities/user.entity';
 import { Post } from 'api/posts/entities/post.entity';
+import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto';
 
 @Injectable()
 export class UsersService {
@@ -33,7 +38,13 @@ export class UsersService {
     const newUser = this.userRepo.create(data);
     const hashPassword = await hash(newUser.password, 10);
     newUser.password = hashPassword;
-    return this.userRepo.save(newUser);
+    const user = this.userRepo
+      .save(newUser)
+      .then((res) => res)
+      .catch((err) => {
+        throw new BadRequestException(`${err.message}` || 'Unexpected Error');
+      });
+    return user;
   }
 
   async update(id: number, changes: UpdateUserDto) {
