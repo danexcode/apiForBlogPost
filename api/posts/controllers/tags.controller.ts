@@ -24,7 +24,7 @@ export class TagsController {
   }
 
   @ApiOperation({ summary: 'Get tag by id' })
-  @Get(':id')
+  @Get('/:id')
   get(@Param('id', ParseIntPipe) id: number) {
     return this.tagsService.findOne(id);
   }
