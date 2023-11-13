@@ -9,8 +9,8 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { PostsService } from '../services/posts.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { PostsService } from '../services/posts.service';
 import { CreatePostDto, FilterPostDto, UpdatePostDto } from '../dtos/post.dto';
 
 @Controller('posts')
@@ -18,22 +18,25 @@ import { CreatePostDto, FilterPostDto, UpdatePostDto } from '../dtos/post.dto';
 export class PostsController {
   constructor(private postsService: PostsService) {}
 
-  @ApiOperation({ summary: 'List of posts' })
+  @ApiOperation({ summary: 'Get list of posts order by creation date' })
   @Get('/')
   getPosts(@Query() params: FilterPostDto) {
     return this.postsService.findAll(params);
   }
 
+  @ApiOperation({ summary: 'Get post by id' })
   @Get('/:postId')
   getOne(@Param('postId', ParseIntPipe) postId: number) {
     return this.postsService.findOne(postId);
   }
 
+  @ApiOperation({ summary: 'Create post' })
   @Post('/')
   create(@Body() payload: CreatePostDto) {
     return this.postsService.create(payload);
   }
 
+  @ApiOperation({ summary: 'Add tag to post' })
   @Post('/:postId/tag/:tagId')
   createCategoryByPost(
     @Param('postId', ParseIntPipe) postId: number,
@@ -42,6 +45,7 @@ export class PostsController {
     return this.postsService.addTagByPost(postId, tagId);
   }
 
+  @ApiOperation({ summary: 'Update post by id' })
   @Put('/:id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -50,11 +54,13 @@ export class PostsController {
     return this.postsService.update(id, payload);
   }
 
+  @ApiOperation({ summary: 'Delete post by id' })
   @Delete(':id')
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.postsService.remove(id);
   }
 
+  @ApiOperation({ summary: 'Remove tag to post' })
   @Delete(':postId/category/:categoryId')
   deleteCategory(
     @Param('postId', ParseIntPipe) postId: number,
