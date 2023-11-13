@@ -10,6 +10,6 @@ export class Category extends DateAt {
   @Column({ type: 'varchar', length: 255, unique: true })
   name: string;
 
-  @OneToMany(() => Post, (post) => post.categoryId)
+  @OneToMany(() => Post, (post) => post.category)
   posts: Post[];
 }

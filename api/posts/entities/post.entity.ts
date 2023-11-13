@@ -5,12 +5,14 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { DateAt } from '../../database/commonEntities/date-at.entity';
 import { Category } from './category.entity';
 import { Tag } from './tag.entity';
+import { Comment } from '../../users/entities/comment.entity';
 
 @Entity({ name: 'posts' })
 export class Post extends DateAt {
@@ -28,7 +30,10 @@ export class Post extends DateAt {
 
   @ManyToOne(() => Category, (category) => category.posts)
   @JoinColumn({ name: 'category_id' })
-  categoryId: number;
+  category: Category;
+
+  @OneToMany(() => Comment, (comment) => comment.post)
+  comments: Comment[];
 
   @ManyToMany(() => Tag, (tag) => tag.posts)
   @JoinTable({
