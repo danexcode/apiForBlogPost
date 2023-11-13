@@ -3,13 +3,13 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreatePostDto, UpdatePostDto } from '../dtos/post.dto';
+import { Tag } from '../entities/tag.entity';
 import { Post } from '../entities/post.entity';
 import { Category } from '../entities/category.entity';
-import { Tag } from '../entities/tag.entity';
 
 @Injectable()
 export class PostsService {
