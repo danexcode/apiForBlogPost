@@ -22,6 +22,6 @@ export class Comment extends DateAt {
   @JoinColumn({ name: 'post_id' })
   post: Post;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'text', nullable: false })
   content: string;
 }

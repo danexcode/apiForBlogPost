@@ -25,9 +25,15 @@ export class PostsController {
   }
 
   @ApiOperation({ summary: 'Get post by id' })
-  @Get('/:postId')
-  getOne(@Param('postId', ParseIntPipe) postId: number) {
-    return this.postsService.findOne(postId);
+  @Get('/:id')
+  getOne(@Param('id', ParseIntPipe) id: number) {
+    return this.postsService.findOne(id);
+  }
+
+  @ApiOperation({ summary: 'Get related posts by post id' })
+  @Get('/:id/related')
+  getRelated(@Param('id', ParseIntPipe) id: number) {
+    return this.postsService.findRelatedPosts(id);
   }
 
   @ApiOperation({ summary: 'Create post' })
@@ -55,17 +61,17 @@ export class PostsController {
   }
 
   @ApiOperation({ summary: 'Delete post by id' })
-  @Delete(':id')
+  @Delete('/:id')
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.postsService.remove(id);
   }
 
   @ApiOperation({ summary: 'Remove tag to post' })
-  @Delete(':postId/category/:categoryId')
+  @Delete('/:postId/tag/:tagId')
   deleteCategory(
     @Param('postId', ParseIntPipe) postId: number,
-    @Param('categoryId', ParseIntPipe) categoryId: number,
+    @Param('tagId', ParseIntPipe) tagId: number,
   ) {
-    return this.postsService.removeTagByPost(postId, categoryId);
+    return this.postsService.removeTagByPost(postId, tagId);
   }
 }

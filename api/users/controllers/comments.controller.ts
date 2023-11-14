@@ -9,10 +9,11 @@ import {
   Put,
 } from '@nestjs/common';
 import { CommentsService } from '../services/comments.service';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateCommentDto, UpdateCommentDto } from '../dtos/comment.dto';
 
 @Controller('comments')
+@ApiTags('Comments')
 export class CommentsController {
   constructor(private commentsService: CommentsService) {}
 

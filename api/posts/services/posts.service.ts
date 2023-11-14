@@ -6,32 +6,36 @@ import {
 import { FindManyOptions, FindOptionsWhere, In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
+import { UsersService } from '../../users/services/users.service';
 import { CreatePostDto, FilterPostDto, UpdatePostDto } from '../dtos/post.dto';
 import { Tag } from '../entities/tag.entity';
 import { Post } from '../entities/post.entity';
-import { Category } from '../entities/category.entity';
+import { CategoriesService } from './categories.service';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectRepository(Post)
     private postRepo: Repository<Post>,
-    @InjectRepository(Category)
-    private categoryRepo: Repository<Category>,
     @InjectRepository(Tag)
     private tagRepo: Repository<Tag>,
+    private categoriesService: CategoriesService,
+    private usersService: UsersService,
   ) {}
 
   findAll(query?: FilterPostDto) {
     const options: FindManyOptions = {
-      relations: ['comments', 'tags'],
-      order: { createdAt: 'ASC' },
+      relations: ['category', 'tags'],
+      order: { createdAt: 'DESC' },
     };
     if (query) {
       const where: FindOptionsWhere<Post> = {};
-      const { limit, offset, tag } = query;
-      if (tag) {
-        where.tags = In([tag]);
+      const { limit, offset, category, user } = query;
+      if (category) {
+        where.category = In([category]);
+      }
+      if (user) {
+        where.user = In([user]);
       }
       options['take'] = limit;
       options['skip'] = offset;
@@ -42,6 +46,7 @@ export class PostsService {
 
   async findOne(id: number) {
     const post = await this.postRepo.findOne({
+      relations: ['category', 'comments', 'tags', 'user'],
       where: { id },
     });
     if (!post) {
@@ -50,21 +55,37 @@ export class PostsService {
     return post;
   }
 
+  async findRelatedPosts(id: number) {
+    const post = await this.postRepo.findOne({
+      relations: ['tags'],
+      where: { id },
+    });
+    const tags = post.tags.map((item) => item.id);
+
+    const related = await this.postRepo.find({
+      where: {
+        tags: { id: In(tags) },
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+      take: 20,
+    });
+    return related;
+  }
+
   async create(data: CreatePostDto) {
     const newPost = this.postRepo.create(data);
-    if (data.categoryId) {
-      const category = await this.categoryRepo.findOneBy({
-        id: data.categoryId,
-      });
-      newPost.category = category;
-    }
+    const category = await this.categoriesService.findOne(data.categoryId);
+    newPost.category = category;
 
-    if (data.tagsIds) {
-      const tags = await this.tagRepo.findBy({
-        id: In(data.tagsIds),
-      });
-      newPost.tags = tags;
-    }
+    const user = await this.usersService.findOne(data.userId);
+    newPost.user = user;
+
+    const tags = await this.tagRepo.findBy({
+      id: In(data.tagsIds),
+    });
+    newPost.tags = tags;
 
     const post = this.postRepo
       .save(newPost)
@@ -79,12 +100,7 @@ export class PostsService {
     const post = await this.findOne(id);
 
     if (changes.categoryId) {
-      const category = await this.categoryRepo.findOneBy({
-        id: changes.categoryId,
-      });
-      if (!category) {
-        throw new NotFoundException('category not found');
-      }
+      const category = await this.categoriesService.findOne(changes.categoryId);
       post.category = category;
     }
 

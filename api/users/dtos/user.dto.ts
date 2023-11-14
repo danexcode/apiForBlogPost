@@ -1,5 +1,5 @@
-import { IsString, IsNotEmpty, IsUrl, IsOptional } from 'class-validator';
-import { PartialType } from '@nestjs/swagger';
+import { IsString, IsNotEmpty, IsUrl } from 'class-validator';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 
 export class CreateUserDto {
   @IsString()
@@ -18,8 +18,12 @@ export class CreateUserDto {
   @IsNotEmpty()
   readonly lastName: string;
 
+  @IsNotEmpty()
+  @ApiProperty({ description: 'the role of the user' })
+  readonly role: string;
+
   @IsUrl()
-  @IsOptional()
+  @IsNotEmpty()
   readonly image: string;
 }
 

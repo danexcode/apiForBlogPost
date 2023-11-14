@@ -30,9 +30,10 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
-  /* @Get(':id/orders')
+  /* @ApiOperation({ summary: 'Get posts by user id' })
+  @Get('/:id/posts')
   getOrders(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.getOrderByUser(id);
+    return this.usersService.getPostsByUser(id);
   } */
 
   @ApiOperation({ summary: 'Create user' })

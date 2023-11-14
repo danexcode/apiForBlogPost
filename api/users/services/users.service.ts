@@ -8,7 +8,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcryptjs';
 
 import { User } from '../entities/user.entity';
-import { Post } from 'api/posts/entities/post.entity';
 import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto';
 
 @Injectable()
@@ -16,14 +15,10 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepo: Repository<User>,
-    @InjectRepository(User)
-    private postRepo: Repository<Post>,
   ) {}
 
   findAll() {
-    return this.userRepo.find({
-      relations: ['customer'],
-    });
+    return this.userRepo.find();
   }
 
   async findOne(id: number) {
@@ -62,14 +57,14 @@ export class UsersService {
     return res;
   }
 
-  async getPostsByUser(id: number) {
-    const user = this.findOne(id);
+  /* async getPostsByUser(id: number) {
+    const user = await this.findOne(id);
     const posts = await this.postRepo.find();
     return {
       user,
       posts,
     };
-  }
+  } */
 
   async findByUsername(username: string) {
     return this.userRepo.findOne({

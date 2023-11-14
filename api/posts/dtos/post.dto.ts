@@ -30,6 +30,11 @@ export class CreatePostDto {
   @ApiProperty({ description: `Post's category id` })
   readonly categoryId: number;
 
+  @IsPositive()
+  @IsNotEmpty()
+  @ApiProperty({ description: `Post's category id` })
+  readonly userId: number;
+
   @IsNotEmpty()
   @IsNumber({}, { each: true })
   @ApiProperty({ description: `Post's tags id` })
@@ -41,13 +46,21 @@ export class UpdatePostDto extends PartialType(CreatePostDto) {}
 export class FilterPostDto {
   @IsOptional()
   @IsPositive()
+  @ApiProperty({ description: `Pagination limit`, required: false })
   limit: number;
 
   @IsOptional()
   @Min(0)
+  @ApiProperty({ description: `Pagination offset`, required: false })
   offset: number;
 
   @IsOptional()
-  @IsString()
-  tag: string;
+  @IsNumber()
+  @ApiProperty({ description: `Filter by category`, required: false })
+  category: number;
+
+  @IsOptional()
+  @IsNumber()
+  @ApiProperty({ description: `Filter by user`, required: false })
+  user: number;
 }
