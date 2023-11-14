@@ -27,6 +27,9 @@ export class User extends DateAt {
   @Column({ type: 'text', nullable: false })
   image: string;
 
-  @OneToMany(() => Post, (post) => post.user)
+  @OneToMany(() => Post, (post) => post.user, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   posts: Post[];
 }

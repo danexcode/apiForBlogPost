@@ -10,6 +10,9 @@ export class Tag extends DateAt {
   @Column({ type: 'varchar', length: 255, unique: true, nullable: false })
   name: string;
 
-  @ManyToMany(() => Post, (post) => post.tags)
+  @ManyToMany(() => Post, (post) => post.tags, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   posts: Post[];
 }

@@ -14,9 +14,21 @@ import { TagsController } from './controllers/tags.controller';
 import { TagsService } from './services/tags.service';
 import { Tag } from './entities/tag.entity';
 
+import { CommentsController } from './controllers/comments.controller';
+import { CommentsService } from './services/comments.service';
+import { Comment } from './entities/comment.entity';
+
 @Module({
-  imports: [TypeOrmModule.forFeature([Post, Category, Tag]), UsersModule],
-  controllers: [PostsController, CategoriesController, TagsController],
-  providers: [PostsService, CategoriesService, TagsService],
+  imports: [
+    TypeOrmModule.forFeature([Post, Category, Tag, Comment]),
+    UsersModule,
+  ],
+  controllers: [
+    PostsController,
+    CategoriesController,
+    TagsController,
+    CommentsController,
+  ],
+  providers: [PostsService, CategoriesService, TagsService, CommentsService],
 })
 export class PostsModule {}

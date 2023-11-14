@@ -5,14 +5,10 @@ import { UsersController } from './controllers/users.controller';
 import { UsersService } from './services/users.service';
 import { User } from './entities/user.entity';
 
-import { CommentsController } from './controllers/comments.controller';
-import { CommentsService } from './services/comments.service';
-import { Comment } from './entities/comment.entity';
-
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Comment])],
-  controllers: [UsersController, CommentsController],
-  providers: [CommentsService, UsersService],
+  imports: [TypeOrmModule.forFeature([User])],
+  controllers: [UsersController],
+  providers: [UsersService],
   exports: [UsersService],
 })
 export class UsersModule {}
