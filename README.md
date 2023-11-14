@@ -57,3 +57,7 @@ Technologies used in the project:
 *   TypeORM
 *   JWT and Passport
 *   PostgreSQL
+
+<h2>📥 Database Schema</h2>
+
+<p align="center"><img src="https://github.com/danexcode/apiForBlogPost/blob/main/public/ProyectAPIBlogPost.jpg" alt="project-image"></p>
