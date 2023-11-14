@@ -8,15 +8,21 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PostsService } from '../services/posts.service';
 import { CreatePostDto, FilterPostDto, UpdatePostDto } from '../dtos/post.dto';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { AuthService } from '../../auth/services/auth.service';
 
 @Controller('posts')
 @ApiTags('Posts')
 export class PostsController {
-  constructor(private postsService: PostsService) {}
+  constructor(
+    private postsService: PostsService,
+    private authService: AuthService,
+  ) {}
 
   @ApiOperation({ summary: 'Get list of posts order by creation date' })
   @Get('/')
@@ -36,15 +42,20 @@ export class PostsController {
     return this.postsService.findRelatedPosts(id);
   }
 
-  @ApiOperation({ summary: 'Create post' })
+  @ApiOperation({ summary: 'Create post', description: 'Must be logged' })
+  @UseGuards(JwtAuthGuard)
   @Post('/')
   create(@Body() payload: CreatePostDto) {
     return this.postsService.create(payload);
   }
 
-  @ApiOperation({ summary: 'Add tag to post' })
+  @ApiOperation({
+    summary: 'Add tag to post',
+    description: 'Must be logged',
+  })
+  @UseGuards(JwtAuthGuard)
   @Post('/:postId/tag/:tagId')
-  createCategoryByPost(
+  createTagByPost(
     @Param('postId', ParseIntPipe) postId: number,
     @Param('tagId', ParseIntPipe) tagId: number,
   ) {
@@ -52,6 +63,7 @@ export class PostsController {
   }
 
   @ApiOperation({ summary: 'Update post by id' })
+  @UseGuards(JwtAuthGuard)
   @Put('/:id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -61,12 +73,14 @@ export class PostsController {
   }
 
   @ApiOperation({ summary: 'Delete post by id' })
+  @UseGuards(JwtAuthGuard)
   @Delete('/:id')
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.postsService.remove(id);
   }
 
   @ApiOperation({ summary: 'Remove tag to post' })
+  @UseGuards(JwtAuthGuard)
   @Delete('/:postId/tag/:tagId')
   deleteCategory(
     @Param('postId', ParseIntPipe) postId: number,

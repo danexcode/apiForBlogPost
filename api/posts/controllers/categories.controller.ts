@@ -7,10 +7,12 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CategoriesService } from '../services/categories.service';
 import { CreateCategoryDto, UpdateCategoryDto } from '../dtos/category.dto';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 
 @Controller('categories')
 @ApiTags('Categories')
@@ -30,12 +32,14 @@ export class CategoriesController {
   }
 
   @ApiOperation({ summary: 'Create category' })
+  @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() payload: CreateCategoryDto) {
     return this.categoriesService.create(payload);
   }
 
   @ApiOperation({ summary: 'Update category by id' })
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -45,6 +49,7 @@ export class CategoriesController {
   }
 
   @ApiOperation({ summary: 'Delete category by id' })
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.categoriesService.remove(id);

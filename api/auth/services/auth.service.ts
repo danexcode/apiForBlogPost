@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { compare } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 
 import { UsersService } from '../../users/services/users.service';
 import { User } from '../../users/entities/user.entity';
 import { PayloadToken } from '../models/token.model';
+import { UserAuth } from '../models/userAuth.model';
+import { Role } from '../models/roles.model';
 
 @Injectable()
 export class AuthService {
@@ -37,5 +39,19 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
       user,
     };
+  }
+
+  isAuthorizated({ id, user, allowAdmin }: UserAuth) {
+    if (allowAdmin) {
+      if (user.role === Role.ADMIN) {
+        return true;
+      }
+    }
+
+    if (id !== user.sub) {
+      throw new UnauthorizedException('you are not allowed');
+    }
+
+    return true;
   }
 }
